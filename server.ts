@@ -11,11 +11,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Determine execution mode:
-// - Dev mode (AI Studio environment running "npm run dev"): MUST listen on port 3000 and mount vite.middlewares
+// - Dev mode (AI Studio environment running dev): listens on port 3000 and mounts vite.middlewares
 // - Production mode (GCP Cloud Run container): listens on process.env.PORT || 8080 and serves static dist files
-const isDev = process.env.npm_lifecycle_event === 'dev';
-const isProduction = !isDev;
-const PORT = isDev ? 3000 : (process.env.PORT ? parseInt(process.env.PORT, 10) : 8080);
+const isProduction = process.env.NODE_ENV === 'production' && process.env.npm_lifecycle_event !== 'dev';
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
