@@ -7,108 +7,261 @@ import {
   Zap,
   Cloud,
   Award,
-  Bot,
   QrCode,
   TreePine,
   Recycle,
   Leaf,
   ArrowRight,
   MapPin,
-  Mail,
-  Phone,
   Globe,
-  Eye,
-  EyeOff,
+  Sun,
+  Wind,
+  CloudRain,
+  Navigation,
 } from 'lucide-react';
 import { INITIAL_METRICS } from '../../data/mockData';
 import { CurrencyCode, CURRENCY_SYMBOLS } from '../../utils/currency';
+import { useRewards } from '../rewards/RewardsContext';
+
+import { User } from '../../types';
 
 interface HomeViewProps {
+  user: User;
   onNavigate: (destination: string) => void;
   currency: CurrencyCode;
   onCurrencyChange: (c: CurrencyCode) => void;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, currency, onCurrencyChange }) => {
+export const HomeView: React.FC<HomeViewProps> = ({ user, onNavigate, currency, onCurrencyChange }) => {
+  const { availablePoints, provisionalPoints } = useRewards();
   const [periodIndex, setPeriodIndex] = useState(0);
   const periodKeys: ('today' | 'week' | 'month')[] = ['today', 'week', 'month'];
   const currentKey = periodKeys[periodIndex];
   const metrics = INITIAL_METRICS[currentKey];
 
-  // User Contact & Privacy state
-  const [locationStr, setLocationStr] = useState('New Delhi / Bangalore, India');
-  const [emailStr] = useState('sreepathink@carbonlens.dev');
-  const [phoneStr] = useState('+91 98765 43210');
-  const [isEmailPublic, setIsEmailPublic] = useState(true);
-  const [isPhonePublic, setIsPhonePublic] = useState(false);
+  const [locationStr, setLocationStr] = useState('New Delhi, India');
+  const [lat, setLat] = useState(28.6139);
+  const [lon, setLon] = useState(77.2090);
+  const [weather, setWeather] = useState<{
+    temp: number;
+    condition: string;
+    windspeed: number;
+    bgImage: string;
+  } | null>({
+    temp: 28,
+    condition: 'Sunny & Pleasant',
+    windspeed: 12,
+    bgImage: 'https://images.unsplash.com/photo-1622383563227-04401ab4e5ea?auto=format&fit=crop&w=1200&q=80',
+  });
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [isEditingLocation, setIsEditingLocation] = useState(false);
+  const [inputCity, setInputCity] = useState('');
+
+  React.useEffect(() => {
+    fetchWeather(lat, lon);
+  }, [lat, lon]);
+
+  const fetchWeather = async (latitude: number, longitude: number) => {
+    try {
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+      if (!res.ok) throw new Error('Weather fetch failed');
+      const data = await res.json();
+      const cw = data.current_weather;
+      if (cw) {
+        const temp = Math.round(cw.temperature);
+        const wind = cw.windspeed;
+        const code = cw.weathercode;
+        
+        let condition = 'Sunny';
+        let bgImage = 'https://images.unsplash.com/photo-1622383563227-04401ab4e5ea?auto=format&fit=crop&w=1200&q=80';
+
+        if (code >= 1 && code <= 3) {
+          condition = wind > 25 ? 'Windy & Cloudy' : 'Partly Cloudy';
+          bgImage = 'https://images.unsplash.com/photo-1534088568595-a068f410bcda?auto=format&fit=crop&w=1200&q=80';
+        } else if (code >= 45 && code <= 48) {
+          condition = 'Foggy & Misty';
+          bgImage = 'https://images.unsplash.com/photo-1485236715568-ddc5ee6ca227?auto=format&fit=crop&w=1200&q=80';
+        } else if (code >= 51 && code <= 67) {
+          condition = 'Rainy Showers';
+          bgImage = 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=1200&q=80';
+        } else if (wind > 22) {
+          condition = 'Windy Breeze';
+          bgImage = 'https://images.unsplash.com/photo-1509803874385-db7c23652552?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        setWeather({ temp, condition, windspeed: wind, bgImage });
+      }
+    } catch (err) {
+      console.warn('Weather fetch error:', err);
+    }
+  };
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    setIsDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        setLat(latitude);
+        setLon(longitude);
+
+        try {
+          const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const revData = await revRes.json();
+          const city = revData.address?.city || revData.address?.town || revData.address?.state || 'Detected Location';
+          const country = revData.address?.country ? `, ${revData.address.country}` : '';
+          setLocationStr(`${city}${country}`);
+        } catch {
+          setLocationStr(`Lat: ${latitude.toFixed(2)}, Lon: ${longitude.toFixed(2)}`);
+        }
+        setIsDetecting(false);
+      },
+      (error) => {
+        console.warn('Geolocation error:', error);
+        setIsDetecting(false);
+        alert('Could not access your location. Please check browser permissions or search manually.');
+      },
+      { timeout: 10000 }
+    );
+  };
+
+  const handleSearchCity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputCity.trim()) return;
+    try {
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(inputCity.trim())}&count=1`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const result = data.results[0];
+        setLat(result.latitude);
+        setLon(result.longitude);
+        setLocationStr(`${result.name}, ${result.country || ''}`);
+        setIsEditingLocation(false);
+        setInputCity('');
+      } else {
+        alert('Location not found. Please try another city.');
+      }
+    } catch (err) {
+      console.error('City search failed:', err);
+      alert('Failed to search location.');
+    }
+  };
 
   return (
     <div className="space-y-4">
-      {/* User Info & Privacy / Currency Bar */}
-      <div className="bg-white rounded-3xl border border-[#e8efed] p-4 sm:p-5 shadow-xs space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#e8efed]">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#10243b]">
-            <MapPin size={15} className="text-[#008b5b]" />
-            <span>{locationStr}</span>
+      {/* User Welcome Greeting Banner */}
+      <div className="bg-white rounded-3xl border border-[#e8efed] p-4 sm:p-5 shadow-xs flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#e4f7eb] text-[#008b5b] flex items-center justify-center font-bold text-lg shadow-2xs border border-[#008b5b]/20">
+            {user.displayName.charAt(0).toUpperCase()}
           </div>
-
-          {/* Currency Selector */}
-          <div className="flex items-center gap-1.5">
-            <Globe size={14} className="text-[#008b5b]" />
-            <span className="text-xs text-[#53667b] font-medium">Currency:</span>
-            <select
-              value={currency}
-              onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
-              className="py-1 px-2.5 rounded-xl text-xs font-bold bg-[#f8fbfa] border border-[#e8efed] text-[#10243b] focus:outline-hidden focus:border-[#008b5b]"
-            >
-              <option value="INR">INR (₹)</option>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="JPY">JPY (¥)</option>
-            </select>
+          <div>
+            <span className="text-xs text-[#53667b] font-medium">Welcome back,</span>
+            <h3 className="text-base sm:text-lg font-black text-[#10243b]">{user.displayName}</h3>
           </div>
         </div>
+        <div className="text-right">
+          <span className="text-[11px] font-bold text-[#008b5b] bg-[#e4f7eb] px-3 py-1.5 rounded-xl border border-[#a9efc3]">
+            Eco Member 🌱
+          </span>
+        </div>
+      </div>
 
-        {/* Contact Info with Public / Private toggles */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          {/* Email */}
-          <div className="p-2.5 bg-[#f8fbfa] rounded-2xl border border-[#e8efed] flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <Mail size={15} className="text-[#008b5b] shrink-0" />
-              <span className="font-medium text-[#10243b] truncate">
-                {isEmailPublic ? emailStr : '••••••••@carbonlens.dev'}
-              </span>
+      {/* User Location & Weather Widget with Background Image */}
+      <div className="relative rounded-3xl overflow-hidden shadow-md text-white border border-[#e8efed]">
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-all duration-700 filter brightness-90"
+          style={{ backgroundImage: `url('${weather?.bgImage || 'https://images.unsplash.com/photo-1622383563227-04401ab4e5ea?auto=format&fit=crop&w=1200&q=80'}')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#10243b]/90 via-[#10243b]/75 to-[#008b5b]/80 backdrop-blur-2xs" />
+
+        <div className="relative p-5 sm:p-6 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold bg-white/10 px-3 py-1.5 rounded-2xl backdrop-blur-md border border-white/20">
+              <MapPin size={16} className="text-[#a9efc3]" />
+              <span>{locationStr}</span>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsEmailPublic(!isEmailPublic)}
-              className="p-1.5 text-[#53667b] hover:text-[#008b5b] rounded-lg hover:bg-gray-100 transition cursor-pointer flex items-center gap-1 text-[10px] font-bold shrink-0"
-              title="Toggle Public / Private"
-            >
-              {isEmailPublic ? <Eye size={13} /> : <EyeOff size={13} />}
-              <span>{isEmailPublic ? 'Public' : 'Private'}</span>
-            </button>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleDetectLocation}
+                disabled={isDetecting}
+                className="py-1.5 px-3 bg-[#008b5b] hover:bg-[#007749] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <Navigation size={13} className={isDetecting ? 'animate-spin' : ''} />
+                <span>{isDetecting ? 'Detecting...' : 'Detect GPS'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsEditingLocation(!isEditingLocation)}
+                className="py-1.5 px-3 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-xl backdrop-blur-md transition cursor-pointer"
+              >
+                {isEditingLocation ? 'Cancel' : 'Change City'}
+              </button>
+            </div>
           </div>
 
-          {/* Mobile Phone */}
-          <div className="p-2.5 bg-[#f8fbfa] rounded-2xl border border-[#e8efed] flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <Phone size={15} className="text-[#008b5b] shrink-0" />
-              <span className="font-medium text-[#10243b] truncate">
-                {isPhonePublic ? phoneStr : '+91 ••••• •••••'}
-              </span>
+          {isEditingLocation && (
+            <form onSubmit={handleSearchCity} className="flex gap-2 pt-1 animate-fadeIn">
+              <input
+                type="text"
+                value={inputCity}
+                onChange={(e) => setInputCity(e.target.value)}
+                placeholder="Enter city name (e.g. London, Tokyo, Delhi)..."
+                className="flex-1 py-2 px-3 text-xs rounded-xl bg-white/95 text-[#10243b] placeholder-gray-500 font-medium focus:outline-hidden shadow-sm"
+              />
+              <button
+                type="submit"
+                className="py-2 px-4 bg-[#008b5b] hover:bg-[#007749] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+              >
+                Search
+              </button>
+            </form>
+          )}
+
+          {weather && (
+            <div className="flex items-center justify-between pt-2 border-t border-white/20">
+              <div className="flex items-center gap-3">
+                <div className="text-3xl font-black tracking-tight">
+                  {weather.temp}°C
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[#a9efc3] flex items-center gap-1.5">
+                    {weather.condition.toLowerCase().includes('sun') && <Sun size={15} />}
+                    {weather.condition.toLowerCase().includes('cloud') && <Cloud size={15} />}
+                    {weather.condition.toLowerCase().includes('wind') && <Wind size={15} />}
+                    {weather.condition.toLowerCase().includes('rain') && <CloudRain size={15} />}
+                    {!weather.condition.toLowerCase().includes('sun') && !weather.condition.toLowerCase().includes('cloud') && !weather.condition.toLowerCase().includes('wind') && !weather.condition.toLowerCase().includes('rain') && <Sun size={15} />}
+                    <span>{weather.condition}</span>
+                  </div>
+                  <span className="text-[11px] text-white/80">Wind speed: {weather.windspeed} km/h • Air Quality: Good 🍃</span>
+                </div>
+              </div>
+
+              {/* Currency Selector beside weather */}
+              <div className="flex items-center gap-1.5 bg-black/30 p-2 rounded-2xl backdrop-blur-sm border border-white/10">
+                <Globe size={14} className="text-[#a9efc3]" />
+                <span className="text-xs text-white/90 font-medium hidden sm:inline">Currency:</span>
+                <select
+                  value={currency}
+                  onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
+                  className="py-1 px-2 rounded-xl text-xs font-bold bg-white text-[#10243b] focus:outline-hidden"
+                >
+                  <option value="INR">INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="JPY">JPY (¥)</option>
+                </select>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsPhonePublic(!isPhonePublic)}
-              className="p-1.5 text-[#53667b] hover:text-[#008b5b] rounded-lg hover:bg-gray-100 transition cursor-pointer flex items-center gap-1 text-[10px] font-bold shrink-0"
-              title="Toggle Public / Private"
-            >
-              {isPhonePublic ? <Eye size={13} /> : <EyeOff size={13} />}
-              <span>{isPhonePublic ? 'Public' : 'Private'}</span>
-            </button>
-          </div>
+          )}
         </div>
       </div>
 
@@ -175,10 +328,10 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, currency, onCurr
               Current Balance
             </span>
             <div className="text-2xl font-black text-[#10243b]">
-              {metrics.wallet.available_points} GP
+              {availablePoints.toLocaleString()} GP
             </div>
             <span className="text-xs text-[#53667b]">
-              +{metrics.wallet.provisional_points} GP provisional
+              +{provisionalPoints} GP provisional
             </span>
           </div>
           <button
@@ -188,28 +341,6 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, currency, onCurr
           >
             View Rewards
           </button>
-        </div>
-      </GreenCard>
-
-      {/* AI Insight Card */}
-      <GreenCard bgColor="bg-[#f0efff]">
-        <div className="flex items-start gap-3.5">
-          <div className="p-2.5 bg-white rounded-2xl text-[#7772d5] shadow-2xs shrink-0">
-            <Bot size={26} />
-          </div>
-          <div className="flex-1">
-            <h4 className="text-sm font-bold text-[#10243b]">AI Insight</h4>
-            <p className="text-xs sm:text-sm text-[#404c5e] mt-1 leading-relaxed">
-              {metrics.insight}
-            </p>
-            <button
-              type="button"
-              onClick={() => onNavigate('Green Buy')}
-              className="mt-2 text-xs font-bold text-[#6863cf] hover:text-[#524cb8] flex items-center gap-1 group cursor-pointer"
-            >
-              Explore alternatives <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
-            </button>
-          </div>
         </div>
       </GreenCard>
 

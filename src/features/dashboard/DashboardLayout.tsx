@@ -42,6 +42,7 @@ interface DashboardLayoutProps {
   consent: ConsentPreferences;
   onUpdateConsent: (consent: ConsentPreferences) => void;
   onSignOut: () => void;
+  onUpdateUser: (user: User) => void;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -49,6 +50,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   consent,
   onUpdateConsent,
   onSignOut,
+  onUpdateUser,
 }) => {
   const [selected, setSelected] = useState('Home');
   const [latestScanId, setLatestScanId] = useState<string>('scan-bamboo-toothbrush-8821');
@@ -89,7 +91,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           />
         );
       case 'Green Buy':
-        return <RecommendationsScreen onNavigate={handleNavigate} />;
+        return <RecommendationsScreen onNavigate={handleNavigate} user={user} />;
       case 'Cart':
         return <CartScreen user={user} onNavigate={handleNavigate} />;
       case 'Green Move':
@@ -121,11 +123,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             consent={consent}
             onUpdateConsent={onUpdateConsent}
             onSignOut={onSignOut}
+            onUpdateUser={onUpdateUser}
           />
         );
       case 'Home':
       default:
-        return <HomeView onNavigate={handleNavigate} currency={currency} onCurrencyChange={setCurrency} />;
+        return <HomeView user={user} onNavigate={handleNavigate} currency={currency} onCurrencyChange={setCurrency} />;
     }
   };
 

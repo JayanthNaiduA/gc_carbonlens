@@ -4,6 +4,7 @@ import { AuthScreen } from './features/auth/AuthScreen';
 import { ConsentScreen } from './features/consent/ConsentScreen';
 import { DashboardLayout } from './features/dashboard/DashboardLayout';
 import { CartProvider } from './features/cart/CartContext';
+import { RewardsProvider } from './features/rewards/RewardsContext';
 import { CurrencyProvider } from './utils/currency';
 import { auth, getUserProfile, saveUserProfile } from './services/firebase';
 import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
@@ -90,6 +91,25 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleUpdateUser = async (updated: User) => {
+    setUser(updated);
+    if (!updated.isDemo) {
+      try {
+        await saveUserProfile({
+          uid: updated.uid,
+          displayName: updated.displayName,
+          email: updated.email,
+          phoneNumber: updated.phoneNumber,
+          consent: consent || undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.error('Failed to update user profile in Firestore:', err);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f8fbfa] flex items-center justify-center">
@@ -145,14 +165,17 @@ export const App: React.FC = () => {
   // 3. Authenticated and consented -> render full CarbonLens Dashboard
   return (
     <CurrencyProvider>
-      <CartProvider currentUser={user}>
-        <DashboardLayout
-          user={user}
-          consent={consent}
-          onUpdateConsent={handleConsentAccepted}
-          onSignOut={handleSignOut}
-        />
-      </CartProvider>
+      <RewardsProvider currentUser={user}>
+        <CartProvider currentUser={user}>
+          <DashboardLayout
+            user={user}
+            consent={consent}
+            onUpdateConsent={handleConsentAccepted}
+            onSignOut={handleSignOut}
+            onUpdateUser={handleUpdateUser}
+          />
+        </CartProvider>
+      </RewardsProvider>
     </CurrencyProvider>
   );
 };

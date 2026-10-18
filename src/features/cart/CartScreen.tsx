@@ -94,10 +94,10 @@ export const CartScreen: React.FC<CartScreenProps> = ({
   const filteredCatalog = VERIFIED_MARKET_ITEMS.filter((item) => {
     if (selectedStoreFilter === 'All') return true;
     if (selectedStoreFilter === 'Personal Care') return item.category === 'Personal Care';
-    if (selectedStoreFilter === 'Home') return item.category === 'Home';
-    if (selectedStoreFilter === 'Food') return item.category === 'Food';
-    if (selectedStoreFilter === 'Projects & Offsets') return item.category === 'Projects & Offsets' || item.type === 'project';
-    return true;
+    if (selectedStoreFilter === 'Home & Kitchen') return item.category === 'Home' || item.category === 'Home & Kitchen';
+    if (selectedStoreFilter === 'Food & Grocery') return item.category === 'Food' || item.category === 'Food & Grocery';
+    if (selectedStoreFilter === 'Zero Waste Essentials') return item.category === 'Zero Waste Essentials';
+    return item.category === selectedStoreFilter;
   }).sort((a, b) => {
     if (sortBy === 'credits-desc') return b.creditsReward - a.creditsReward;
     if (sortBy === 'price-asc') return a.price - b.price;
@@ -120,10 +120,10 @@ export const CartScreen: React.FC<CartScreenProps> = ({
             CarbonLens Verified Guarantee
           </div>
           <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-            Green Cart & Verified Projects
+            Green Cart & Verified Store
           </h2>
           <p className="text-xs sm:text-sm text-white/90 mt-1 max-w-xl leading-relaxed">
-            Purchase verified sustainable goods and certified carbon projects. When verified by our platform, <span className="font-bold underline decoration-[#a9efc3] text-white">credits are deposited automatically</span> to your wallet!
+            Purchase verified sustainable, plastic-free products. When verified by our platform, <span className="font-bold underline decoration-[#a9efc3] text-white">credits are deposited automatically</span> to your Rewards wallet!
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-white/20 text-xs">
@@ -492,7 +492,7 @@ export const CartScreen: React.FC<CartScreenProps> = ({
           <div className="bg-white rounded-2xl border border-[#e8efed] p-3 space-y-3 shadow-xs">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-1.5">
-                {(['All', 'Personal Care', 'Home', 'Food', 'Projects & Offsets'] as const).map((cat) => (
+                {(['All', 'Personal Care', 'Home & Kitchen', 'Food & Grocery', 'Zero Waste Essentials'] as const).map((cat) => (
                   <button
                     key={cat}
                     type="button"

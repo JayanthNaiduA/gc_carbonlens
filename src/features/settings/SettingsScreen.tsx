@@ -18,6 +18,10 @@ import {
   Calendar,
   Edit3,
   Check,
+  Mail,
+  Phone,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { User, ConsentPreferences } from '../../types';
 
@@ -26,6 +30,7 @@ interface SettingsScreenProps {
   consent: ConsentPreferences;
   onUpdateConsent: (updated: ConsentPreferences) => void;
   onSignOut: () => void;
+  onUpdateUser: (user: User) => void;
 }
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
@@ -33,6 +38,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   consent,
   onUpdateConsent,
   onSignOut,
+  onUpdateUser,
 }) => {
   // Bio state
   const [age, setAge] = useState('28');
@@ -41,11 +47,33 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [joinedDate] = useState('October 2026');
   const [isEditingBio, setIsEditingBio] = useState(false);
 
+  // Name state
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(user.displayName);
+
+  const handleSaveName = () => {
+    if (!nameInput.trim()) return;
+    const updatedUser: User = {
+      ...user,
+      displayName: nameInput.trim(),
+    };
+    onUpdateUser(updatedUser);
+    setIsEditingName(false);
+    setNotice('Display name updated successfully.');
+    setTimeout(() => setNotice(null), 3000);
+  };
+
   // Theme state
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Profile Picture state
   const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  // Contact & Privacy state
+  const [emailStr] = useState(user.email || 'sreepathink@carbonlens.dev');
+  const [phoneStr] = useState(user.phoneNumber || '+91 98765 43210');
+  const [isEmailPublic, setIsEmailPublic] = useState(true);
+  const [isPhonePublic, setIsPhonePublic] = useState(false);
 
   // Consent modal state
   const [showConsentModal, setShowConsentModal] = useState(false);
@@ -92,6 +120,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
   return (
     <div className="space-y-4">
+      {notice && <MessageBox message={notice} />}
+
       {/* User Profile & Bio Card */}
       <GreenCard padding="p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
@@ -111,9 +141,48 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
           <div className="flex-1 text-center sm:text-left space-y-1">
             <div className="flex flex-wrap items-center justify-center sm:justify-between gap-2">
-              <h3 className="text-lg font-black text-[#10243b]">
-                {user.displayName}
-              </h3>
+              {isEditingName ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    placeholder="Enter your name"
+                    className="py-1 px-3 text-xs font-bold rounded-xl border border-[#008b5b] text-[#10243b] focus:outline-hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveName}
+                    className="py-1 px-2.5 bg-[#008b5b] text-white text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer hover:bg-[#007749]"
+                  >
+                    <Check size={12} /> Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditingName(false);
+                      setNameInput(user.displayName);
+                    }}
+                    className="py-1 px-2 bg-gray-100 text-[#53667b] text-xs font-bold rounded-xl cursor-pointer hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-black text-[#10243b]">
+                    {user.displayName}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingName(true)}
+                    className="text-[#008b5b] hover:text-[#007749] p-1 rounded-lg hover:bg-[#e4f7eb] transition cursor-pointer"
+                    title="Edit name"
+                  >
+                    <Edit3 size={14} />
+                  </button>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 {/* Small Compact Sign Out Button */}
                 <button
@@ -193,6 +262,50 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           </div>
         </div>
       </GreenCard>
+
+      {/* Contact Info Card */}
+      <div className="bg-white rounded-3xl border border-[#e8efed] p-4 sm:p-5 shadow-xs space-y-3">
+        <h4 className="text-xs font-bold text-[#53667b] uppercase tracking-wider">Account Contact Information</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          {/* Email */}
+          <div className="p-2.5 bg-[#f8fbfa] rounded-2xl border border-[#e8efed] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Mail size={15} className="text-[#008b5b] shrink-0" />
+              <span className="font-medium text-[#10243b] truncate">
+                {isEmailPublic ? emailStr : '••••••••@carbonlens.dev'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsEmailPublic(!isEmailPublic)}
+              className="p-1.5 text-[#53667b] hover:text-[#008b5b] rounded-lg hover:bg-gray-100 transition cursor-pointer flex items-center gap-1 text-[10px] font-bold shrink-0"
+              title="Toggle Public / Private"
+            >
+              {isEmailPublic ? <Eye size={13} /> : <EyeOff size={13} />}
+              <span>{isEmailPublic ? 'Public' : 'Private'}</span>
+            </button>
+          </div>
+
+          {/* Mobile Phone */}
+          <div className="p-2.5 bg-[#f8fbfa] rounded-2xl border border-[#e8efed] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Phone size={15} className="text-[#008b5b] shrink-0" />
+              <span className="font-medium text-[#10243b] truncate">
+                {isPhonePublic ? phoneStr : '+91 ••••• •••••'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsPhonePublic(!isPhonePublic)}
+              className="p-1.5 text-[#53667b] hover:text-[#008b5b] rounded-lg hover:bg-gray-100 transition cursor-pointer flex items-center gap-1 text-[10px] font-bold shrink-0"
+              title="Toggle Public / Private"
+            >
+              {isPhonePublic ? <Eye size={13} /> : <EyeOff size={13} />}
+              <span>{isPhonePublic ? 'Public' : 'Private'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* App Appearance: Bright / Dark Theme Toggle */}
       <GreenCard padding="p-4 sm:p-5">

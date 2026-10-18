@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { GreenMarketItem, CartItem, OrderRecord, User } from '../../types';
-import { saveUserOrder, getUserOrders, awardUserCredits } from '../../services/firebase';
+import { saveUserOrder, getUserOrders } from '../../services/firebase';
+import { useRewards } from '../rewards/RewardsContext';
 
 interface CartContextType {
   items: CartItem[];
@@ -16,6 +17,11 @@ interface CartContextType {
     user: User,
     paymentMethod: string,
     onSuccessCallback?: (order: OrderRecord, creditsAwarded: number) => void
+  ) => Promise<OrderRecord>;
+  buyProductNow: (
+    user: User,
+    product: GreenMarketItem,
+    paymentMethod?: string
   ) => Promise<OrderRecord>;
   orders: OrderRecord[];
   loadingOrders: boolean;
@@ -53,6 +59,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode; currentUser: Us
 
   const [loadingOrders, setLoadingOrders] = useState<boolean>(false);
   const [lastCelebratedOrder, setLastCelebratedOrder] = useState<OrderRecord | null>(null);
+  const { addRewardPoints } = useRewards();
 
   // Sync cart items to localStorage
   useEffect(() => {
@@ -170,31 +177,92 @@ export const CartProvider: React.FC<{ children: React.ReactNode; currentUser: Us
       created_at: new Date().toISOString(),
     };
 
-    // 1. Award credits automatically to Firestore if real user
+    // 1. Immediately award credits to live RewardsContext (wallet + ledger)
+    const itemsSummary = items.map((i) => `${i.quantity}x ${i.name}`).join(', ');
+    await addRewardPoints(
+      totalCreditsReward,
+      itemsSummary,
+      orderId,
+      {
+        itemName: items[0]?.name,
+        co2AvoidedKg: totalCo2Avoided,
+      }
+    );
+
+    // 2. Persist order record to Firestore if real user
     if (!user.isDemo) {
       try {
-        await awardUserCredits(
-          user.uid,
-          totalCreditsReward,
-          orderId,
-          items.map((i) => i.name).join(', ')
-        );
         await saveUserOrder(user.uid, orderRecord);
       } catch (err) {
         console.warn('Could not persist order to Firestore directly; keeping in session:', err);
       }
     }
 
-    // 2. Add to orders list locally
+    // 3. Add to orders list locally
     setOrders((prev) => [orderRecord, ...prev]);
     setLastCelebratedOrder(orderRecord);
 
-    // 3. Clear cart
+    // 4. Clear cart
     clearCart();
 
     if (onSuccessCallback) {
       onSuccessCallback(orderRecord, totalCreditsReward);
     }
+
+    return orderRecord;
+  };
+
+  const buyProductNow = async (
+    user: User,
+    product: GreenMarketItem,
+    paymentMethod = 'CarbonLens Instant EcoPay'
+  ): Promise<OrderRecord> => {
+    const orderId = `ord-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
+    const verificationHash = `CL-VERIFIED-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+    const orderRecord: OrderRecord = {
+      order_id: orderId,
+      items: [
+        {
+          id: product.id,
+          name: product.name,
+          quantity: 1,
+          price: product.price,
+          credits_reward: product.creditsReward,
+          type: product.type,
+        },
+      ],
+      total_amount: product.price,
+      credits_earned: product.creditsReward,
+      co2_avoided_kg: product.co2AvoidedKg,
+      verification_status: 'VERIFIED',
+      verification_hash: verificationHash,
+      payment_method: paymentMethod,
+      created_at: new Date().toISOString(),
+    };
+
+    // Immediately award credits to live RewardsContext (wallet + ledger)
+    await addRewardPoints(
+      product.creditsReward,
+      product.name,
+      orderId,
+      {
+        itemName: product.name,
+        co2AvoidedKg: product.co2AvoidedKg,
+      }
+    );
+
+    // Persist to Firestore if real user
+    if (!user.isDemo) {
+      try {
+        await saveUserOrder(user.uid, orderRecord);
+      } catch (err) {
+        console.warn('Could not persist order to Firestore:', err);
+      }
+    }
+
+    setOrders((prev) => [orderRecord, ...prev]);
+    setLastCelebratedOrder(orderRecord);
 
     return orderRecord;
   };
@@ -212,6 +280,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode; currentUser: Us
         removeFromCart,
         clearCart,
         checkout,
+        buyProductNow,
         orders,
         loadingOrders,
         refreshOrders,

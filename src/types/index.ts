@@ -51,6 +51,16 @@ export interface SustainabilityScoreData {
   };
 }
 
+export interface MaterialAlternative {
+  material: string;
+  name: string;
+  description: string;
+  co2_avoided_kg: number;
+  credits_reward: number;
+  price?: number;
+  imageUrl?: string;
+}
+
 export interface ScanResultPayload {
   scan_id: string;
   status: string;
@@ -59,6 +69,18 @@ export interface ScanResultPayload {
   sustainability: SustainabilityScoreData;
   receipt_scan_id?: string;
   baseline_scans?: Record<string, string>;
+  detected_text?: string;
+  materials?: string[];
+  is_high_footprint?: boolean;
+  recommended_swap?: {
+    name: string;
+    description: string;
+    carbon_savings_kg: number;
+    credits_reward: number;
+    price?: number;
+    imageUrl?: string;
+    material_alternatives?: MaterialAlternative[];
+  };
 }
 
 export interface LedgerEntry {
