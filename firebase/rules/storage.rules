@@ -1,0 +1,17 @@
+// Private immutable scan evidence. Enable bucket App Check enforcement separately.
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{uid}/scans/{scanId}/{filename} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.size > 0 && request.resource.size <= 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png)')
+        && request.resource.metadata.uid == uid;
+      allow update, delete: if false;
+    }
+    match /{object=**} {
+      allow read, write: if false;
+    }
+  }
+}

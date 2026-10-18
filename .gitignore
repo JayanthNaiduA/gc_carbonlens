@@ -1,0 +1,70 @@
+# Local environments and credentials
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+.venv/
+venv/
+.aws/
+.gcloud/
+credentials/
+secrets/
+*service-account*.json
+*service_account*.json
+*credentials*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+key.properties
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+.firebase/
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+# Flutter / Dart / Android
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+.gradle/
+local.properties
+android/.cxx/
+# Editors and operating system files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+# Personal/raw evidence must never become public fixtures
+local-evidence/
+# Project-local SDKs, emulator images and build caches
+.tools/
+# Actual app configuration stays private; example files remain tracked
+*.local.json
+*.local.yaml
+*.local.yml
+# One-time package-scaffold backup; preserve the active manifest and lock in Git
+**/pubspec.scaffold.yaml
+
+# Dependencies and build outputs
+node_modules/
+dist/
+.aistudio/

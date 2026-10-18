@@ -1,0 +1,4 @@
+# Installation remains approval-required. Official Admin SDK for Auth/Firestore.
+firebase-admin==7.7.0
+# Production Cloud Run server; Windows offline unit tests do not require it.
+gunicorn==26.2.0; sys_platform != 'win32'

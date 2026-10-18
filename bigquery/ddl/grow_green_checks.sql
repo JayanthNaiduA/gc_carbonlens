@@ -1,0 +1,3 @@
+-- Scaffold only: HLD planting persistence facts without exact coordinates.
+-- Confirm schema and location against HLD section 12 / LLD section 10.
+-- No CREATE, INSERT, UPDATE, DELETE or migration statements.

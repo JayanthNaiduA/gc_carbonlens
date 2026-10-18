@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with authentication info, contact details, consent preferences, and points balance",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phoneNumber": { "type": "string", "maxLength": 30 },
+        "wallet": {
+          "type": "object",
+          "properties": {
+            "available_points": { "type": "number" },
+            "provisional_points": { "type": "number" }
+          }
+        },
+        "consent": {
+          "type": "object",
+          "properties": {
+            "camera": { "type": "boolean" },
+            "location": { "type": "boolean" },
+            "healthConnect": { "type": "boolean" },
+            "microphone": { "type": "boolean" },
+            "personalization": { "type": "boolean" },
+            "acceptedAt": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "displayName"]
+    },
+    "TreePlot": {
+      "title": "TreePlot",
+      "description": "Registered planting plot with tree count and coordinates",
+      "type": "object",
+      "properties": {
+        "project_id": { "type": "string", "maxLength": 128 },
+        "claimed_count": { "type": "number" },
+        "species": { "type": "string", "maxLength": 100 },
+        "state": { "type": "string", "enum": ["PENDING", "PROVISIONAL", "VESTED"] },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "created_at": { "type": "string" }
+      },
+      "required": ["project_id", "claimed_count", "species", "state"]
+    },
+    "RecycleClaim": {
+      "title": "RecycleClaim",
+      "description": "Verified electronics recycling drop-off claim",
+      "type": "object",
+      "properties": {
+        "claim_id": { "type": "string", "maxLength": 128 },
+        "item_category": { "type": "string", "maxLength": 100 },
+        "weight_kg": { "type": "number" },
+        "recycler_id": { "type": "string", "maxLength": 100 },
+        "photo_ref": { "type": "string", "maxLength": 250 },
+        "doc_ref": { "type": "string", "maxLength": 250 },
+        "status": { "type": "string", "enum": ["PENDING", "VERIFIED"] },
+        "created_at": { "type": "string" }
+      },
+      "required": ["claim_id", "item_category", "weight_kg", "recycler_id"]
+    },
+    "LedgerEntry": {
+      "title": "LedgerEntry",
+      "description": "Green Points transaction ledger record",
+      "type": "object",
+      "properties": {
+        "event_id": { "type": "string", "maxLength": 128 },
+        "points_delta": { "type": "number" },
+        "entry_type": { "type": "string", "enum": ["VESTED", "PROVISIONAL"] },
+        "policy_version": { "type": "string", "maxLength": 100 },
+        "created_at": { "type": "string" }
+      },
+      "required": ["event_id", "points_delta", "entry_type"]
+    },
+    "OrderRecord": {
+      "title": "OrderRecord",
+      "description": "User purchases of verified green products and projects with automatic credit award",
+      "type": "object",
+      "properties": {
+        "order_id": { "type": "string", "maxLength": 128 },
+        "total_amount": { "type": "number" },
+        "credits_earned": { "type": "number" },
+        "co2_avoided_kg": { "type": "number" },
+        "verification_status": { "type": "string", "enum": ["VERIFIED", "PENDING"] },
+        "created_at": { "type": "string" }
+      },
+      "required": ["order_id", "total_amount", "credits_earned", "verification_status", "created_at"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores user profiles keyed by Firebase Auth UID"
+    },
+    "/users/{userId}/plots/{plotId}": {
+      "schema": { "$ref": "#/entities/TreePlot" },
+      "description": "Stores user planting plots"
+    },
+    "/users/{userId}/claims/{claimId}": {
+      "schema": { "$ref": "#/entities/RecycleClaim" },
+      "description": "Stores user recycling claims"
+    },
+    "/users/{userId}/ledger/{ledgerId}": {
+      "schema": { "$ref": "#/entities/LedgerEntry" },
+      "description": "Stores user Green Points transactions"
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/OrderRecord" },
+      "description": "Stores user verified green orders and automatic credits"
+    }
+  }
+}

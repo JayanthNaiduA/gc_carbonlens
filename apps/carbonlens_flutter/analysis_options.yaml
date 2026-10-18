@@ -1,0 +1,3 @@
+# Analyzer configuration scaffold.
+# Add approved Flutter/Dart lint configuration during development.
+analyzer: {exclude: [build/**, android/**, web/**]}

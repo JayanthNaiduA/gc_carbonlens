@@ -1,0 +1,9 @@
+{
+  "name": "CarbonLens",
+  "short_name": "CarbonLens",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f8f5",
+  "theme_color": "#00865a",
+  "description": "See your impact. Choose greener. Earn for change."
+}

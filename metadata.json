@@ -1,0 +1,8 @@
+{
+  "name": "CarbonLens",
+  "description": "See your impact, choose greener alternatives, and verify sustainability actions for Green Points.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

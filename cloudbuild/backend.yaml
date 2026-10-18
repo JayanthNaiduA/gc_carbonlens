@@ -1,0 +1,3 @@
+# Inactive backend build scaffold. No installation, deployment or cloud operations.
+# See cloudbuild/README.md. Add steps only in an approved implementation stage.
+steps: []

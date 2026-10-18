@@ -1,0 +1,19 @@
+# REVIEW ONLY: not the active package manifest. Approval required before activation/install.
+name: carbonlens_flutter
+description: CarbonLens web and Android prototype.
+publish_to: 'none'
+version: 0.1.0
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: 4.15.0
+  firebase_auth: 6.7.0
+  firebase_app_check: 0.4.8
+  google_sign_in: 7.2.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true

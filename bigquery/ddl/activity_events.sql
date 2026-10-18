@@ -1,0 +1,3 @@
+-- Scaffold only: HLD supplemental activity facts.
+-- Confirm schema and location against HLD section 12 / LLD section 10.
+-- No CREATE, INSERT, UPDATE, DELETE or migration statements.

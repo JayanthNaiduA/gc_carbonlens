@@ -1,0 +1,1010 @@
+CARBONLENS
+Google JAPAC Prototype Technical Execution Plan+ Integrated High-Level Design (HLD) - Reward Framework Upgrade
+Web + Android Mobile Prototype | Google-First Architecture | Oct 7-18, 2026
+Primary architecture decisionBuild from the core outward. Prove one thin, end-to-end CarbonLens loop first: capture evidence -> identify/normalize -> deterministic impact/sustainability calculation -> Gemini explanation -> Trusted Green Event verification -> policy-driven reward ledger -> dashboard. The same Trusted Green Event contract is then reused across four foundational reward segments: Go-Green-Product, Green-Move, Grow-Green and Recycle-Red. Store, community, Earth Pulse and other wrappers remain secondary.
+Prepared for Google JAPAC Prototype SubmissionDocument Version 2.1 | 9 October 2026
+Document Control
+Item
+Value
+Document
+CarbonLens Google JAPAC Technical Execution Plan + Integrated HLD
+Version
+2.1
+Date
+9 October 2026
+Target Submission
+18 October 2026
+Primary Outputs
+Public web prototype, Android mobile build, GitHub repository, PPT/PDF, demo video
+Architecture Constraint
+Google products/services for the solution stack; GitHub retained only because the submission explicitly requires a public GitHub repository.
+Source Design
+CarbonLens finalized product concept, CarbonLens HLD v1.0, and four-segment reward framework upgrade
+Status as of Oct 7Oct 5 (idea selection) and Oct 6 (problem statement/HLD) are treated as completed inputs. The build plan therefore starts immediately with project/repository/bootstrap work on Oct 7.
+Table of Contents
+1. Executive Direction
+2. Competition Requirements Translated to Engineering Goals
+3. Build Strategy: Core First, Wrappers Later
+4. Approved Google-First Technology Stack
+5. Integrated High-Level Design (HLD)
+6. MVP Scope and Cut Lines
+7. Repository and Project Structure
+8. Google Cloud/Firebase Foundation Setup
+9. Day-by-Day Execution Plan: Oct 7-18
+10. Detailed Implementation Sequence
+11. API and Event Contracts
+12. Data Architecture and Schemas
+13. Security, Privacy and Trust Controls
+14. CI/CD, Deployment and Observability
+15. Test Strategy and Quality Gates
+16. Demo, Documentation and Submission Packaging
+17. Risk Register and Recovery Plan
+18. Final Definition of Done
+Appendix A. Integrated HLD Diagrams
+Appendix B. Google Product Reference Map
+1. Executive Direction
+Recommended development direction: inside-out, core-first, using a thin vertical slice.
+Do not spend the first days building every screen, store page, community wrapper or report. The judging model gives 40% to technical merit and 30% to problem alignment. A small but real AI + Google Cloud + sustainability workflow is stronger than a visually broad prototype whose core calculations and AI are mocked.
+First prove the scientific/technical core. A product or receipt is converted into structured evidence; CarbonLens calculates a reproducible estimate/score and records confidence.
+Then prove the AI value. Gemini explains the trusted result and generates a practical greener alternative. It does not invent the carbon value.
+Then prove trust and reward. Verification/duplicate checks gate Green Points so the prototype shows responsible behavior design rather than simple gamification.
+Then expand the reward foundation. Reuse the same Trusted Green Event contract for Green-Move, Grow-Green and Recycle-Red once Go-Green-Product works.
+Then wrap it in experience. Dashboard, reports, Green Store sample cards, community and Earth Pulse come after the verified action loop is stable.
+Figure 1 - Core-first implementation order for the JAPAC prototype
+1.1 The prototype story that must work
+1. John signs in and accepts only the permissions needed for the selected feature.
+2. John scans a product (plastic water bottle) or chooses a provided sample image.
+3. Cloud Vision/OCR and product normalization produce a candidate product/category and confidence.
+4. The Carbon Engine retrieves a versioned factor/category record and calculates the carbon estimate and Sustainability Score.
+5. Gemini receives the structured result and explains why the item scores as it does; it proposes a reusable alternative.
+6. A trusted green action or purchase produces a verification decision and eligible Green Points.
+7. The dashboard/report updates with carbon, avoided emissions, score and points kept as separate metrics.
+8. Optional: Green Move demonstrates low-carbon transport using Health Connect/route evidence.
+2. Competition Requirements Translated to Engineering Goals
+Competition requirement
+Engineering interpretation
+Evidence in final demo
+Working prototype
+At least one complete, live E2E path using real Google Cloud services.
+Live public web URL plus Cloud Run-backed workflow.
+Google Cloud / AI
+Vertex AI Gemini is part of the user outcome, not a decorative chatbot.
+Gemini explains structured CarbonLens evidence; architecture slide names services and responsibilities.
+Meaningful environmental/social problem
+Every calculation/recommendation maps to a concrete user action and transparent confidence.
+Before/after greener choice and avoided-emissions story.
+Technical Merit - 40%
+Show service boundaries, deterministic carbon engine, data provenance, secure identity, observability and event flow.
+Architecture, logs/monitoring screenshot, API/data flow.
+Problem Alignment - 30%
+Demonstrate sustainable purchasing, low-carbon mobility, tree survival/persistence and safe e-waste diversion through verified actions.
+Four-segment reward story with at least one live path and bounded evidence for the others.
+Innovation - 20%
+Four reward segments converge on one Trusted Green Event + versioned Reward Policy Engine + confidence + anti-gaming ledger.
+V0-V3 verification, provisional/vested states, duplicate/fraud controls and reason codes visible in demo/diagram.
+UX - 10%
+One simple mobile/web flow with clear scores, caveats and actions.
+Clean Flutter UI and 2-3 minute demo.
+Artifacts
+Public GitHub, functional link, PPT/PDF, video.
+Submission checklist completed by Oct 18.
+3. Build Strategy: Core First, Wrappers Later
+Why this orderCarbonLens differentiates itself through trusted sustainability evidence, deterministic carbon accounting and verified behavior rewards. Those capabilities sit below the UI. If they are real by Oct 11, the rest of the prototype can be simplified without weakening the submission.
+Layer
+Build now?
+Why
+Foundation: project, repo, auth, hosting, API
+P0 - first
+Everything depends on deployability and identity.
+Carbon/score data contract
+P0 - early
+Prevents AI/UI from inventing or mixing metrics.
+Gemini explanation/recommendation
+P0
+Directly demonstrates Google AI technical merit.
+Product/receipt evidence ingestion
+P0
+Turns the idea into a real-world working prototype.
+Trusted Green Event + reward policy/ledger
+P0
+Foundation shared by all four reward segments; evidence must be verified before value is issued.
+Dashboard + reports
+P0
+Closes the behavior-feedback loop.
+Four reward segments
+P0/P1
+Go-Green-Product is the P0 live path; Green-Move, Grow-Green and Recycle-Red use the same event/reward architecture as thin P1 paths.
+Green Store sample catalog
+P1
+Useful wrapper; use 8-10 curated products only.
+Earth Pulse
+P2
+Nice-to-have; can distract from core.
+Community leaderboard
+P2
+Can be mocked/seeded if time remains.
+Voice, Wallet, full marketplace, advanced fraud ML
+Phase 2
+Do not put submission at risk for breadth; Earth Engine is now a supporting P1/P2 Grow-Green signal.
+4. Approved Google-First Technology Stack
+The following stack intentionally keeps the solution on Google/Firebase/Android products. GitHub is the only submission-required external platform; do not add third-party SaaS services for auth, hosting, CI/CD, analytics, AI or databases.
+Layer
+Google technology
+Purpose / design rule
+Priority
+Client
+Flutter + Dart + Material 3
+One codebase for web and Android; Google-originated UI stack.
+P0
+IDE / local
+Android Studio, Chrome DevTools
+Google tools for Flutter/mobile/web development and debugging.
+P0
+Web hosting
+Firebase Hosting
+Public web URL; static Flutter web delivery.
+P0
+Authentication
+Firebase Authentication
+Google sign-in and email/password; central UID.
+P0
+App abuse protection
+Firebase App Check
+Attests app/client before sensitive backend access; not proof of physical action.
+P0
+Operational DB
+Cloud Firestore
+User profile, consent, scans, wallet projection, recommendations, catalog metadata.
+P0
+Object storage
+Cloud Storage for Firebase / Google Cloud Storage
+Temporary product/receipt images and demo assets.
+P0
+Backend compute
+Cloud Run
+Containerized stateless API/services with managed autoscaling.
+P0
+AI reasoning
+Gemini 2.5 Flash on Vertex AI
+Multimodal/structured explanation and recommendation; stable choice over preview-only model for demo.
+P0
+Image analysis
+Cloud Vision API
+Labels/text/OCR evidence for product imagery.
+P0
+Receipt extraction
+Document AI Expense Parser or OCR
+Structured merchant/date/amount; item extraction enhanced by normalization logic.
+P1
+Analytics / factor store
+BigQuery
+Versioned sustainability/emission-factor datasets, event analytics and reports.
+P0
+Event messaging
+Pub/Sub
+Async scan/reward/analytics events; decouples demo services.
+P1
+Mobility
+Health Connect (Android)
+Steps/distance/activity/session evidence for Green Move.
+P1
+Routing
+Google Maps Platform Routes API
+Optional eco-route/fuel comparison where supported.
+P1/P2
+Secrets
+Secret Manager
+API secrets/configuration not stored in source.
+P0
+Encryption control
+Cloud KMS
+Optional customer-managed key layer for protected data.
+P2
+Build
+Cloud Build
+CI/build from GitHub connection; no GitHub Actions.
+P0
+Artifacts
+Artifact Registry
+Stores immutable Cloud Run container images.
+P0
+Operations
+Cloud Logging + Cloud Monitoring
+Logs, metrics, dashboards, alerting.
+P0
+Mobile test distribution
+Firebase App Distribution
+Internal Android build sharing during hackathon.
+P1
+Video
+YouTube or Google Drive
+Final demo video hosting.
+Submission
+Source repository
+GitHub - mandatory exception
+Required by competition. Avoid non-Google CI/CD around it.
+Submission
+Maps / geo evidence
+Google Maps Platform (Maps SDK, Geocoding/Geolocation as applicable)
+Render CarbonLens planting plots, validate/normalize locations and support route/location evidence. Google Maps is a visualization/location source, not an individual-tree survival authority.
+P1
+Vegetation monitoring
+Google Earth Engine
+Optional second-source evidence for Grow-Green plots using vegetation/land-cover time series. Use at plot/area level only when imagery resolution is sufficient.
+P1/P2
+Grow-Green visual checks
+Gemini on Vertex AI (multimodal)
+Compare periodic plot photos for tree/vegetation presence and obvious inconsistencies. Advisory signal only; final reward decision remains deterministic/policy controlled.
+P1
+Recycler document verification
+Document AI Expense/Invoice Parser + OCR
+Extract recycler, date, receipt/certificate number, amount/weight where present; normalized fields feed duplicate and registry checks.
+P1
+Do not over-interpret “Google-only”Programming languages and open-source packages are implementation details, not competing cloud/SaaS services. Keep every managed platform capability on Google. For maximum purity, prefer Flutter/Dart on clients, official Google Cloud SDKs in the backend, Android Studio/Cloud Shell for tooling, and Cloud Build for CI/CD.
+5. Integrated High-Level Design (HLD)
+This section incorporates the architecture decisions from CarbonLens HLD v1.0 and aligns them to the Oct 18 prototype plan. The architecture remains intentionally production-shaped while allowing a smaller number of deployable services for the prototype.
+5.1 System context
+Figure 2 - CarbonLens system context (integrated from HLD v1.0)
+Users interact through Flutter web/Android clients.
+Firebase Authentication and App Check establish identity and client trust.
+Cloud Run hosts API/domain services; no authoritative carbon or reward logic is trusted to the client.
+BigQuery is the analytical/factor source; Firestore is the low-latency operational store.
+Gemini explains trusted structured facts; it is not the system of record for carbon numbers or rewards.
+5.2 Logical architecture
+Figure 3 - Logical application architecture
+Component
+Responsibility
+Prototype deployment
+Flutter client
+Login/consent, scan capture, dashboard, reports, store, Green Move UI.
+One Flutter project targeting web + Android.
+API/BFF
+Validates Firebase token/App Check, consent, schema, idempotency; exposes /v1 API.
+One Cloud Run service initially.
+Scan module
+Image upload, Vision/OCR/Document AI calls, evidence normalization.
+Module inside API service until scale requires split.
+Carbon Engine
+Deterministic factor lookup/calculation; returns method, boundary, factor version and confidence.
+Module inside API, backed by BigQuery.
+Trusted Event Engine
+Verification level, duplicates, plausibility, reward eligibility.
+Module inside API; persist reasons.
+Reward Engine
+Append-only Green Points ledger and balance projection.
+Firestore transaction-backed module.
+AI Orchestrator
+Builds trusted context, calls Gemini, validates structured output.
+Module inside API.
+Analytics
+Event facts, daily summaries, factor/version datasets.
+BigQuery; optional Pub/Sub ingestion.
+Observability
+Trace IDs, structured logs, request/error metrics.
+Cloud Logging + Monitoring.
+Reward Policy Engine
+Applies action-specific base rates, impact factors, verification/confidence/persistence factors, caps and sponsor policy. No client or Gemini can issue rewards directly.
+Module inside API; policies stored/versioned in Firestore/BigQuery.
+Grow-Green Verification
+Manages geo-tagged plots, planting evidence, scheduled check-ins, visitor confirmations and optional Earth Engine area signals.
+Module inside API; Firestore + Cloud Storage + Maps + Earth Engine.
+Recycle-Red Verification
+Validates e-waste/electronics claims against images, recycler registry, receipt/certificate extraction and duplicate fingerprints.
+Module inside API; Document AI/Vision + Firestore/BigQuery.
+5.3 Data architecture
+Figure 4 - Operational, analytical and AI data separation
+Firestore = operational truth. Users, consents, scan jobs/results, reward wallet/ledger, recommendations, sample store/order state.
+BigQuery = analytical/scientific truth. Emission factors, product/category sustainability data, green events, daily summaries, reporting aggregates.
+Cloud Storage = temporary evidence. Raw product/receipt images have lifecycle deletion; persistent records keep structured facts/hashes where possible.
+Gemini context = derived, not authoritative. Only structured, consent-approved facts are sent; generated prose is stored separately from scientific calculations.
+5.4 Carbon accounting rules
+Carbon-linked action:activity_quantity x emission_factor = estimated_CO2eavoided_CO2e = max(0, baseline_CO2e - actual_CO2e)Universal reward policy:Reward Points = Base Action Points x Impact Factor x Verification Factor x Confidence Factor x Persistence Factor x Anti-Abuse AdjustmentImpact Factor is segment-specific: product improvement delta, avoided CO2e, verified tree survival/persistence, or verified e-waste diversion. Green Points are loyalty/reward units; they are not tradable carbon credits.
+Carbon estimate, Sustainability Score, avoided CO2e, confidence and Green Points are separate fields and must never be collapsed into one score.
+Product lifecycle boundary may include raw material, manufacturing, packaging, transport, use and end-of-life where supported; otherwise use category estimate + lower confidence.
+Recreational walking/running does not automatically become avoided emissions; the app needs a credible transport baseline/counterfactual.
+Every factor used by the Carbon Engine must carry a factor_set_version and provenance/source field.
+Not every reward action should be converted into a carbon-credit claim. Product replacement may use sustainability improvement, Green-Move may use avoided CO2e, Grow-Green uses verified planting/survival/persistence, and Recycle-Red uses verified hazardous-waste diversion. Carbon estimates remain separate where scientifically supportable.
+5.5 Product scan and trusted event sequence
+Figure 5 - Product scan and explanation sequence
+Figure 6 - Trusted Green Event verification and reward flow
+Level
+Meaning
+Prototype reward treatment
+V0
+Self-declared / insufficient evidence
+Awareness/badge only; no high-value or carbon-linked reward.
+V1
+One partially trusted signal
+Reduced/capped or provisional GP; additional evidence may be required.
+V2
+Multiple consistent signals (activity/location/photo/document/plausibility)
+Eligible for normal reward under segment policy; Grow-Green may remain provisional pending persistence.
+V3
+Strong transaction/document/community/independent verification
+Highest eligible confidence, still subject to caps, duplicate checks and policy rules.
+5.6 Four-Segment Rewarding Architecture - Foundational Design
+The reward system is a core domain architecture, not a UI gamification layer. Every eligible action is converted into a canonical Trusted Green Event with evidence, an action-specific impact metric, verification level, confidence, fraud signals, policy version and reward state. The Reward Policy Engine issues value only from that server-side event.
+Figure 7 - Four foundational reward segments converging on the Trusted Green Event and reward ledger
+Segment
+Eligible action
+Minimum evidence
+Primary verification
+Impact basis
+Reward release
+Go-Green-Product
+User replaces a conventional/high-impact product with a materially better alternative in the same category.
+Product scan + new-product receipt or transaction evidence + product/category metadata.
+Product/category match, score delta, receipt fingerprint, duplicate checks, V1-V3 evidence.
+Sustainability improvement (score delta) and, where available, lifecycle/packaging impact difference.
+Usually immediate after V2/V3 verification; category and daily caps.
+Green-Move
+Walking/cycling/public transport replaces a normally motorized journey such as home-to-office.
+Declared commute baseline + Health Connect activity + time/distance + optional route/location evidence.
+Activity plausibility, route/time consistency, overlap/duplicate checks, explicit substitution baseline.
+Estimated avoided CO2e = baseline transport emissions - actual transport emissions.
+After V2 verification; per-trip/day distance and reward caps.
+Grow-Green
+User plants and maintains a geo-tagged batch/plot of trees.
+Plot polygon/point, planting photos, count/species where known, periodic location-enabled check-in photos.
+Initial photo/location check; periodic re-checks; authenticated visitor confirmations; optional Earth Engine plot-level vegetation trend.
+Verified planted/surviving trees + persistence checkpoints; carbon sequestration shown only as a separate long-term estimate if supported.
+Staged: PENDING -> PROVISIONAL -> VESTED across survival checkpoints.
+Recycle-Red
+User safely disposes of e-waste or hazardous electronics through an approved/verified recycler.
+Item photo + recycler receipt/certificate; recycler/location metadata; weight/category where available.
+Document AI extraction, recycler registry match, certificate/receipt fingerprint, date/location plausibility, duplicate check.
+Verified hazardous-waste diversion by item category/weight, plus optional carbon/resource benefit estimate.
+After V2/V3 evidence; category/weight caps; no reward for unverified disposal.
+5.6.1 Go-Green-Product
+Intent: reward a better replacement decision, not higher spending. A wooden/bamboo toothbrush replacing a disposable plastic toothbrush is eligible only if CarbonLens can establish a comparable category and a meaningful sustainability improvement.
+The old/conventional product may be identified from prior history, scan, receipt or user-declared baseline. A self-declared baseline lowers verification/confidence.
+The new product must be resolved to a product/category record with Sustainability Score dimensions and confidence. Reward is based on improvement relative to the category/baseline, never purchase price.
+Prevent repeat-crediting by product/receipt fingerprint, replacement cooldown, per-category caps and event idempotency. Consumables may use a policy-defined cadence; durable products should not be rewarded repeatedly for the same replacement.
+5.6.2 Green-Move
+Intent: reward a verified transport substitution. Exercise alone is not sufficient; the user must establish that walking, cycling or another low-carbon mode replaced a plausible motorized trip.
+Baseline examples: home-to-office normally by petrol car, motorcycle or taxi. Baseline mode and approximate distance are captured during onboarding/commute setup and can be periodically reconfirmed.
+Health Connect provides activity/session evidence; Google Maps Platform may support distance/route checks. Exact route storage should be minimized and consent-controlled.
+Fraud checks include impossible speed, overlapping activities, duplicate timestamps, repeated replayed tracks and implausible start/end relationship. Rewards are capped per trip/day.
+5.6.3 Grow-Green
+Intent: reward planting plus survival, not merely uploading a planting photo. CarbonLens creates a Green Plot that is rendered inside the CarbonLens experience on Google Maps; the authoritative project record remains in CarbonLens.
+Initial registration: geo-tagged plot/point, planting date, claimed tree count, species when known, planting photos and consent. Store precise location only as needed and restrict access for private land.
+First check: location/time/photo evidence and duplicate-image checks. Gemini/Vision may assist with visual consistency or approximate vegetation/tree presence, but must not be treated as an exact tree counter without validation.
+Second check: periodic owner check-ins, for example day 30, day 90, day 180 and day 365. Each check-in must occur near the registered plot and include fresh evidence.
+Third check: authenticated CarbonLens visitors/community members can confirm the plot. Visitor confirmations are weighted by account trust, uniqueness, proximity and timing; collusion/repeated mutual confirmations are fraud signals.
+Earth Engine can add an independent area-level signal using vegetation/land-cover time series. Sentinel-2 imagery includes 10 m bands and is suitable for vegetation state/change at plot scale, but it cannot reliably prove survival of an individual young sapling. Therefore Earth Engine is supporting evidence, not the only verifier.
+Reward value: default to Green Points. A partner-funded campaign may define a monetary-equivalent sponsorship such as "up to $20 per verified surviving tree," but that amount is a CarbonLens/partner policy, not a Google Maps payment and must not be hard-coded as a universal entitlement.
+Checkpoint
+Required evidence
+State transition
+Example reward treatment
+Planting / Day 0
+Registered plot + fresh geo/time-bound photos + claimed count
+PENDING -> PROVISIONAL if basic checks pass
+Small initial portion only; no claim of one-year survival.
+Day 30
+Fresh owner check-in near plot
+Remain PROVISIONAL
+Release next policy-defined tranche if consistent.
+Day 90
+Fresh check-in + optional visitor confirmation
+PROVISIONAL
+Additional tranche; investigate conflicting evidence.
+Day 180
+Fresh check-in; plot-level vegetation signal when useful
+PROVISIONAL -> partially vested
+Reward persistence, not raw image count.
+Day 365
+Fresh check-in + visitor/independent signal where available
+VESTED
+Final tranche; project earns one-year survival badge/status.
+5.6.4 Recycle-Red
+Intent: reward safe diversion of environmentally hazardous electronics/e-waste to a verified disposal or recycling channel. The app should verify the hand-off, not reward a photograph of waste alone.
+Before disposal: capture item category/photo and optional device identifiers only if privacy and policy allow. Do not store unnecessary serial numbers.
+At disposal: user submits recycler receipt/certificate. Document AI extracts recycler name, date, document number, amount/weight and line items when present.
+CarbonLens checks the recycler against a curated verified-recycler registry, evaluates location/date plausibility, creates a normalized certificate fingerprint and blocks duplicate claims across accounts.
+Reward is driven by verified waste category/weight and policy-defined hazard/resource-recovery value. Any carbon benefit is shown separately and only when a sourced factor exists.
+5.6.5 Common Reward Policy, State Machine and Anti-Gaming
+Use one policy engine across all four segments so the product can evolve without embedding reward logic in Flutter or Gemini.
+Universal policy formula (conceptual): Reward Points = Base Action Points x Impact Factor x Verification Factor x Confidence Factor x Persistence Factor x Anti-Abuse Adjustment. Each segment defines its own Impact Factor and caps. For carbon-linked actions, avoided CO2e may be one input; it is not mandatory for every segment.
+State
+Meaning
+Allowed transition
+PENDING
+Evidence received; checks not complete.
+-> PROVISIONAL, VESTED or REJECTED
+PROVISIONAL
+Initial verification passed but persistence/additional evidence is required.
+-> VESTED, REJECTED or REVOKED
+VESTED
+Reward permanently earned under the current policy.
+Normally terminal; admin reversal only through audited compensating ledger entry.
+REJECTED
+Evidence insufficient, inconsistent or policy-ineligible.
+May be resubmitted as a new event if policy allows.
+REVOKED
+Previously provisional value removed because fraud/conflicting evidence was confirmed.
+Terminal; preserve audit reason.
+Every reward calculation records policy_version, evidence_refs, verification_level, confidence, factors, caps applied and reason codes.
+Ledger is append-only. Never edit a historical issued entry; use a compensating/reversal entry with audit reason.
+Only backend service identities may create ledger entries. Flutter clients, Gemini and analytics jobs cannot directly change balances.
+Cross-account duplicate evidence, suspicious image reuse, implausible location/time, excessive frequency, collusive confirmations and repeated certificates feed the fraud/risk score.
+5.7 Deployment architecture
+Figure 8 - Google-first delivery and deployment model (supersedes the Terraform-based v1.0 deployment view)
+6. MVP Scope and Cut Lines
+Priority
+Must be demonstrably real by Oct 18
+Can be simplified/deferred
+P0
+Firebase login/consent; Flutter dashboard; Go-Green-Product product scan; Vision/OCR evidence; deterministic carbon estimate; Sustainability Score; confidence; Gemini explanation/recommendation; Trusted Green Event + policy-driven Green Points ledger; public Firebase Hosting + Cloud Run; BigQuery factor data; Logging/Monitoring.
+None - these are the judging core.
+P1
+Receipt scan; duplicate fingerprint; Green-Move basic Android path; Grow-Green plot registration + periodic photo/check-in workflow; Recycle-Red claim + recycler receipt/certificate verification; reports; sample Green Store cards.
+Use curated products/recyclers and a demo planting plot. Earth Engine is supporting evidence only and may be demonstrated with a prepared plot/time-series if live imagery timing is unsuitable.
+P2
+Pub/Sub fan-out, eco-route, community leaderboard, Earth Pulse.
+Use only if P0 stable by Oct 15.
+Phase 2
+Gemini Live voice, Google Wallet loyalty, real partner commerce/sponsor payouts, advanced tree-species/count CV, advanced fraud ML, global marketplace.
+Architecture supports them; do not risk submission breadth.
+7. Repository and Project Structure
+Use one public GitHub repository because it is a required submission artifact. Keep Google Cloud build/deploy configuration in the same repository so the code and architecture are reproducible.
+carbonlens/├── apps/│   └── carbonlens_flutter/├── services/│   └── carbonlens_api/│       ├── domains/go_green_product/│       ├── domains/green_move/│       ├── domains/grow_green/│       ├── domains/recycle_red/│       ├── trust/│       └── rewards/├── data/│   ├── emission_factors/│   ├── product_catalog/│   ├── reward_policies/│   └── verified_recyclers/├── bigquery/├── firebase/├── cloudbuild/├── docs/├── testdata/└── README.md
+Protect main with pull-request review when working as a team.
+Do not store Firebase service account keys or API keys in GitHub. Prefer workload identity/service accounts and Secret Manager.
+Commit test fixtures only when they contain no personal information.
+Document every dataset source and factor version in /data and README.
+8. Google Cloud/Firebase Foundation Setup
+1. Create one Google Cloud project for the hackathon. Use a clear project ID such as carbonlens-japac-2026. If quota/billing permits and the team is comfortable, create a second production project later; do not block Oct 7 on multi-project separation.
+2. Attach Firebase to the same project. Register Web and Android apps; configure Firebase Authentication, Firestore, Storage, Hosting and App Check.
+3. Enable APIs. Cloud Run, Artifact Registry, Cloud Build, Vertex AI, Vision, Document AI, BigQuery, Pub/Sub, Secret Manager, Logging, Monitoring, Maps Routes only if used.
+4. Create service identities. At minimum: carbonlens-api-runtime and carbonlens-build. Grant least privilege; avoid Project Owner/Editor for runtime services.
+5. Create Artifact Registry. Repository for the Cloud Run backend image.
+6. Create BigQuery datasets. carbonlens_reference for factors/catalog data and carbonlens_analytics for events/summaries.
+7. Create Storage buckets. Private scan-evidence bucket with lifecycle deletion and a separate public/demo-assets location if needed.
+8. Bootstrap Cloud Run. Deploy /health and /version endpoints before feature development.
+9. Bootstrap Firebase Hosting. Deploy Flutter shell with a visible build/version label.
+10. Configure Cloud Build. Connect the mandatory GitHub repository; build backend and frontend from main branch. Do not use GitHub Actions.
+9. Day-by-Day Execution Plan: Oct 7-18
+Figure 8 - Delivery roadmap and two critical gates
+Date
+Target
+Detailed engineering work
+Exit / acceptance criteria
+Guardrail
+Oct 7
+Foundation + skeleton
+Create GitHub repo; GCP/Firebase project; enable APIs; Flutter shell; routing/navigation; Cloud Run /health; Firestore skeleton; Cloud Build/Artifact Registry; Firebase Hosting first deploy.
+Public placeholder URL works; /health returns 200; commits build; project IDs/API list documented.
+Do not build all UI pages yet.
+Oct 8
+Firebase + frontend
+Firebase Auth Google/email; consent model; protected routes; dashboard cards with seeded data; camera/file picker shell; error/loading states; App Check integration in debug mode.
+User can sign in, record consent and see dashboard in web + Android emulator/device.
+Use seeded results; no science claims yet.
+Oct 9
+Cloud Run backend
+Implement /v1/me, /consents, /scans, /products, /wallet; verify Firebase ID token/App Check; Firestore persistence; trace/request IDs; Secret Manager; Logging.
+Authenticated Flutter client calls deployed Cloud Run; data persists per user.
+One API service is enough.
+Oct 10
+Gemini / Vertex AI
+Create AI Orchestrator; Gemini 2.5 Flash; structured response schema; prompts with system rules; deterministic fallback; test product explanation and greener alternative from seeded structured facts.
+Gemini returns validated JSON grounded in CarbonLens-provided data; no AI-generated carbon number.
+If model fails, user still sees deterministic result.
+Oct 11
+E2E gate + team freeze
+Join login → sample product evidence → seeded factor lookup → carbon/score → Gemini → GP → dashboard. Finalize owners/workstreams and demo contract.
+A 2-minute E2E flow works against deployed Google services even if product identification is still seeded.
+This is the schedule-protection gate.
+Oct 12
+Image/product identification
+Cloud Storage upload; Vision labels/OCR/barcode evidence; optional Document AI path for receipt; product/category resolver; confidence; image lifecycle; duplicate image hash. Define normalized evidence schemas reusable by Go-Green-Product, Grow-Green and Recycle-Red.
+Two or more sample product images resolve to expected category/product; receipt sample extracts core fields.
+Prefer reliable curated demo categories over broad recognition.
+Oct 13
+BigQuery sustainability dataset
+Create emission_factors, product_sustainability, factor_versions tables; load curated seed data; provenance fields; partition event tables; BigQuery queries from backend. Add reward_policy/reference tables and a curated verified_recyclers seed dataset.
+Carbon Engine reads versioned factors from BigQuery and records factor version/source.
+Quality > dataset size.
+Oct 14
+Green Score + Carbon Engine
+Implement deterministic calculator; unit normalization; lifecycle/category rules; Sustainability Score dimensions; confidence A-D; test vectors; separate avoided CO2e.
+Same inputs always produce same result; UI shows carbon estimate, score and confidence separately.
+Do not ask Gemini to calculate carbon.
+Oct 15
+Four-pillar reward framework + greener recommendation
+Rank curated greener alternatives; implement canonical Trusted Green Event, universal Reward Policy Engine and append-only ledger. Complete Go-Green-Product live reward path. Add thin Green-Move, Grow-Green (plot + check-in + visitor confirmation model) and Recycle-Red (receipt/certificate + recycler registry) paths. Earth Engine may be prepared as optional supporting plot evidence.
+All four action types create auditable green_events; Product path is fully live; at least two other segments can be demonstrated with real Google services and curated evidence; duplicate/replay does not double-credit.
+Do not hard-code $/tree or let Google Maps/Gemini issue rewards. Reward values are versioned policy decisions.
+Oct 16
+UI polish + testing + public deploy
+Responsive Flutter web; Android build; App Check enforcement; Firestore/Storage rules; error states; Cloud Monitoring dashboard/alerts; performance/cost smoke tests; production Firebase/Cloud Run deploy. Test reward state transitions, Grow-Green location privacy and Recycle-Red duplicate certificate protection.
+Public URL stable; clean demo account; no secrets/PII in logs; submission code freeze.
+Stop adding features after freeze.
+Oct 17
+PPT/PDF + architecture + video + README
+Finalize architecture images; README setup/usage/limitations; screenshots; 2-3 minute demo video; PPT/PDF; GitHub cleanup; issue list; credits/data sources.
+All submission artifacts open without private permissions; demo video matches deployed build.
+Rehearse from a fresh browser/device.
+Oct 18
+Final submission
+Smoke test public URL; verify video, GitHub, docs, mobile build; check billing/quota; record fallback demo video copy; submit; tag repository release.
+Every required link works and is public; no last-minute code changes unless critical.
+Treat as release day, not development day.
+10. Detailed Implementation Sequence
+10.1 Step 1 - Establish contracts before screens
+Define the canonical ScanResult, CarbonResult, SustainabilityScore, VerificationDecision, RewardLedgerEntry and Recommendation structures. This prevents Flutter, Gemini and BigQuery from using incompatible meanings.
+10.2 Step 2 - Build the shell and identity boundary
+Flutter creates login, consent and dashboard routes. Firebase Authentication owns credentials. App Check token accompanies sensitive calls. The backend derives uid from verified token, never from a client-supplied uid.
+10.3 Step 3 - Deploy the API immediately
+A minimal Cloud Run service exposes /health, /version and authenticated /v1/me. Enable structured logging and request IDs from day one so later errors are diagnosable.
+10.4 Step 4 - Make the Carbon Engine deterministic
+Start with 8-10 product/category examples and a small, transparent factor dataset. Implement calculations and confidence before broad product recognition. Every result includes factor_set_version and method.
+10.5 Step 5 - Add Gemini as an explanation layer
+Gemini receives the result, evidence and candidate alternatives. Force structured JSON output. Validate before returning. The AI may explain and recommend; it may not write reward ledger entries or invent factors.
+10.6 Step 6 - Replace seeded evidence with real image input
+Upload image to Cloud Storage, run Vision/OCR or Document AI, normalize to product/category, then feed exactly the same Carbon Engine contract used by the Oct 11 seeded flow. This makes Oct 12 an input-adapter change rather than a redesign.
+10.7 Step 7 - Add trust and reward gating
+Normalize every eligible action into a canonical green_event with action_type = GO_GREEN_PRODUCT | GREEN_MOVE | GROW_GREEN | RECYCLE_RED. Assign V0-V3 verification, confidence, fraud flags and action-specific impact. Reward Policy Engine applies versioned base/impact/verification/confidence/persistence rules and writes an append-only ledger using unique event_id. Grow-Green supports provisional rewards until persistence checkpoints are met.
+10.8 Step 8 - Complete the behavior loop
+Dashboard and reports read daily summaries/operational state, show what changed and suggest one next action. This closes Observe → Understand → Change → Verify → Reward → Repeat.
+10.9 Step 9 - Expand the same reward foundation to the remaining three segments
+After Go-Green-Product is stable, reuse the same Trusted Green Event and Reward Policy contracts for Green-Move, Grow-Green and Recycle-Red. Green-Move requires a commute substitution baseline; Grow-Green requires plot/check-in persistence; Recycle-Red requires verified recycler evidence. Keep these as thin vertical slices rather than separate mini-apps.
+10.10 Step 10 - Freeze, harden and tell the story
+After Oct 16, prioritize reliability, permissions, logs, screenshots, README, architecture and demo. Do not trade a stable public link for one more feature.
+10.11 Recommended API-first implementation order
+Order
+Endpoint / capability
+Purpose
+1
+GET /health, GET /version
+Deployment verification.
+2
+GET /v1/me, PUT /v1/consents
+Identity + consent baseline.
+3
+POST /v1/scans, GET /v1/scans/{id}
+One scan job/result contract.
+4
+POST /v1/carbon/estimate
+Deterministic product/category calculation.
+5
+POST /v1/ai/explain
+Gemini explanation from trusted context.
+6
+POST /v1/green-events
+Canonical action event: GO_GREEN_PRODUCT | GREEN_MOVE | GROW_GREEN | RECYCLE_RED.
+7
+POST /v1/rewards/evaluate, GET /v1/wallet
+Policy evaluation, exact-once ledger, reward state.
+8
+GET /v1/dashboard, GET /v1/reports/monthly
+Feedback loop across all reward segments.
+9
+POST /v1/receipts
+Receipt/document adapter for product and Recycle-Red evidence.
+10
+POST /v1/green-move
+Commute baseline + low-carbon transport evidence.
+11
+POST /v1/grow-green/projects
+Register geo-tagged Green Plot/batch and privacy/access policy.
+12
+POST /v1/grow-green/{project_id}/checkins
+Periodic owner check-in with fresh photo/location evidence.
+13
+POST /v1/grow-green/{project_id}/confirmations
+Authenticated visitor/community confirmation.
+14
+POST /v1/recycle-red/claims
+E-waste claim with item image + recycler receipt/certificate.
+15
+GET /v1/reward-events/{event_id}
+Audit trail: evidence status, verification, policy factors and reward state.
+11. API and Event Contracts
+API ruleClient sends evidence and user intent; server returns authoritative calculations/eligibility. No client-supplied carbon, score, confidence or Green Points value is trusted.
+POST /v1/scansAuthorization: Bearer <Firebase ID token>X-Firebase-AppCheck: <App Check token>Idempotency-Key: <uuid>{  "mode": "PRODUCT",  "storage_object": "gs://.../scan.jpg",  "client_time": "2026-10-12T10:15:00+05:30"}Response{  "scan_id": "scan_123",  "status": "COMPLETED",  "product_candidate": {"category":"bottled_water", "confidence":0.86},  "carbon": {"kg_co2e":0.18, "method":"category_average", "factor_set_version":"2026-10-demo-v1", "confidence":"C"},  "sustainability": {"score":42, "dimensions":{"carbon":40,"reuse":15,"packaging":35,"recyclability":55}},  "recommendation_id":"rec_123"}
+11.1 Event topics for the prototype
+Topic
+Producer
+Consumer / purpose
+scan.completed
+API/Scan module
+Analytics, recommendation trigger.
+carbon.estimated
+Carbon Engine
+Analytics, report aggregation.
+green_event.verified
+Trust Engine
+Reward evaluation.
+reward.issued
+Reward Engine
+Dashboard/analytics.
+recommendation.generated
+AI Orchestrator
+History/analytics.
+grow_green.checkin_received
+Grow-Green module
+Verification/persistence evaluation.
+grow_green.persistence_verified
+Trust Engine
+Release staged reward tranche if policy allows.
+recycle_red.document_verified
+Recycle-Red module
+Create/upgrade trusted event.
+reward.provisional
+Reward Engine
+Dashboard/notifications; not yet fully vested.
+reward.vested
+Reward Engine
+Wallet projection + analytics.
+reward.revoked
+Reward Engine
+Compensating ledger + risk analytics.
+If Pub/Sub is not ready by Oct 11, call modules synchronously inside one Cloud Run service. Introduce Pub/Sub only when the E2E path is stable. The HLD boundary remains valid even when modules are temporarily co-deployed.
+12. Data Architecture and Schemas
+12.1 Firestore collections
+Collection
+Key fields
+Notes
+users
+uid, pseudonymous_subject_id, mode, created_at
+Do not duplicate passwords or unnecessary auth PII.
+consents
+uid, scope, granted, version, timestamp
+Scopes: camera, activity, location, microphone, personalization.
+scans
+scan_id, uid, mode, status, evidence_ref, result_ref
+Temporary image pointer + structured result.
+products
+product_id, category, attributes, demo_catalog
+Small curated demo catalog.
+recommendations
+recommendation_id, uid, evidence_ids, candidate_ids, ai_output
+Store structured output and model metadata.
+reward_wallets
+uid, projected_balance
+Projection only.
+reward_ledger
+entry_id, uid, event_id, amount, type, policy_version
+Append-only; unique business idempotency.
+green_events
+event_id, uid, action_type, evidence_refs, verification_level, confidence, impact_metric, impact_value, fraud_flags, policy_version, reward_state
+Canonical event for all four reward segments; auditable and idempotent.
+daily_summaries
+uid, date, metrics
+Fast dashboard path.
+commute_baselines
+uid, baseline_id, origin_zone, destination_zone, normal_mode, distance_band, consent_version
+Store coarse zones/bands where possible rather than precise home/work coordinates.
+grow_green_projects
+project_id, uid, map_geometry, privacy_mode, planted_at, claimed_count, species_summary, status
+Green Plot record; exact coordinates access-controlled.
+grow_green_checkins
+checkin_id, project_id, captured_at, location_evidence, image_refs, verifier_type, result
+Periodic owner/community evidence.
+recycle_red_claims
+claim_id, uid, item_category, quantity_or_weight, recycler_id, document_fingerprint, event_id, status
+Safe-disposal claim linked to trusted event.
+verified_recyclers
+recycler_id, name, locations, accepted_categories, verification_source, active
+Curated demo registry; version/source metadata required.
+reward_policies
+policy_id, action_type, version, base_points, factors, caps, persistence_schedule, effective_dates
+Server-side policy; never editable by client.
+12.2 BigQuery tables
+Dataset.table
+Minimum fields
+Design rule
+carbonlens_reference.emission_factors
+factor_id, category, activity_unit, kg_co2e_per_unit, geography, source, effective_from, version, confidence
+Versioned scientific/reference table.
+carbonlens_reference.product_sustainability
+product/category, carbon_intensity, reusability, packaging, recyclability, durability, source, confidence
+Input to Sustainability Score.
+carbonlens_analytics.activity_events
+event_date, subject_id, event_type, value, unit, source
+Partition by event_date.
+carbonlens_analytics.carbon_events
+event_date, subject_id, method, kg_co2e, avoided_kg_co2e, factor_version, confidence
+Never overwrite historical factor version.
+carbonlens_analytics.reward_events
+event_date, subject_id, event_id, points, verification_level, policy_version
+Supports audit/reports.
+carbonlens_analytics.daily_summaries
+date, subject_id, metrics...
+Dashboard/report roll-up.
+carbonlens_analytics.green_action_events
+event_date, subject_id, action_type, verification_level, impact_metric, impact_value, confidence, reward_state, policy_version
+Unified analytics across four segments.
+carbonlens_analytics.grow_green_checks
+event_date, subject_id, project_id, checkpoint_day, evidence_types, vegetation_signal, verification_result
+Supports survival/persistence reporting; avoid exposing precise coordinates to broad analytics users.
+carbonlens_reference.verified_recyclers
+recycler_id, geography, accepted_categories, source, valid_from, valid_to, version
+Reference registry used by Recycle-Red.
+carbonlens_reference.reward_policies
+action_type, policy_version, base_points, cap_json, persistence_json, effective_from
+Historical reward calculations must be reproducible.
+12.3 Sustainability Score v1 for the demo
+Sustainability Score = 0.40 × carbon_intensity_score                     + 0.20 × reusability_score                     + 0.15 × packaging_score                     + 0.15 × recyclability_score                     + 0.10 × durability_score
+Use this as a transparent prototype weighting, not a universal scientific standard. Store the score_policy_version and show users that the Sustainability Score is distinct from kg CO2e.
+13. Security, Privacy and Trust Controls
+Area
+MVP control
+Authentication
+Firebase Authentication; backend verifies ID token.
+Client authenticity
+Firebase App Check; enforce after testing.
+Authorization
+User-scoped Firestore rules and backend IAM. Runtime service accounts receive least privilege.
+Secrets
+Secret Manager only; no service-account JSON/API keys in repository.
+Sensitive images
+Private Cloud Storage bucket; lifecycle deletion; store structured extraction and hashes rather than raw image indefinitely.
+PII separation
+Analytics uses pseudonymous_subject_id rather than email/phone.
+Logs
+Structured logs; redact tokens, email, phone, receipt text and exact routes/locations.
+Reward fraud
+Receipt fingerprint, duplicate/replay detection, event idempotency, caps and V0-V3 verification.
+AI safety
+OCR/web/product text is data, not model instructions; carbon/reward writes are server-controlled.
+Children/student mode
+No payments/monetary reward language and no precise location/fitness by default; badges/challenges only for demo.
+Grow-Green location privacy
+Private-land plots default to restricted visibility; expose generalized map location publicly unless owner explicitly opts in. Exact coordinates remain user-scoped/server-controlled.
+Community confirmation abuse
+Firebase-authenticated verifier; rate limits; account-age/trust weighting; no self-confirmation; detect repeated reciprocal/collusive confirmations.
+Recycler claim fraud
+Verified recycler registry + document fingerprint + cross-account duplicate detection + date/location plausibility.
+Partner-funded reward value
+Monetary-equivalent sponsor campaigns are separate from Green Points, versioned, budget-capped and legally reviewed. Never present Google Maps/Earth Engine as the payer.
+14. CI/CD, Deployment and Observability
+14.1 Google-only delivery pipeline
+1. GitHub push/PR provides source because it is a submission requirement.
+2. Cloud Build runs formatting/tests and builds the backend container.
+3. Artifact Registry stores immutable image digest.
+4. Cloud Build deploys the digest to Cloud Run.
+5. Flutter web is built and deployed to Firebase Hosting; Android APK/AAB is built for device testing.
+6. Firebase App Distribution can distribute the Android build internally.
+7. Cloud Logging captures structured server logs; Cloud Monitoring tracks request count, latency, 5xx rate and instance behavior.
+Signal
+Target / alert idea for hackathon
+Cloud Run availability
+Public /health success during final rehearsal and submission window.
+API error rate
+Alert/dashboard if 5xx spikes; investigate before demo.
+Latency
+Track p50/p95 for scan and AI calls; show pending states rather than freezing UI.
+Vertex AI failures
+Fallback deterministic result; recommendation can show temporarily unavailable.
+Vision/Document AI failures
+Keep scan job failed/pending with retry; never fabricate identification.
+BigQuery/factor failure
+Use only explicitly cached versioned factor set, otherwise return estimate unavailable.
+Reward failure
+Verified event can remain pending; never display points as credited until ledger write succeeds.
+15. Test Strategy and Quality Gates
+Test layer
+Minimum cases before Oct 16
+Unit - Carbon Engine
+Known factor × quantity; unit conversion; missing factor; low confidence; deterministic repeatability.
+Unit - Score
+Weighting sums; clamp 0-100; missing dimensions; score_policy_version.
+Unit - Reward
+V0 no/full reward rules; caps; confidence/verification factor; exact-once duplicate event.
+Integration - Auth
+Valid token, expired token, missing App Check, wrong user resource access.
+Integration - Scan
+Good product image, low-quality image, unknown category, duplicate image, receipt sample.
+Integration - Gemini
+Schema valid; no carbon invention; low-confidence caveat; fallback when model unavailable.
+E2E Web
+Login → scan → result → recommendation → points/dashboard.
+E2E Android
+Login → camera/file scan; optional Health Connect path.
+Security
+Firestore/Storage rules deny cross-user reads/writes; secrets absent from repository.
+Demo rehearsal
+Fresh browser/incognito; clean test account; network retry; recorded fallback video available.
+Unit - Reward policy
+Each action_type selects correct impact basis; caps; policy version; persistence factor; PENDING/PROVISIONAL/VESTED/REVOKED transitions.
+Integration - Grow-Green
+Register plot; reject stale/duplicate image; accept valid checkpoint; privacy mode; visitor cannot self-confirm; optional Earth Engine signal does not independently vest reward.
+Integration - Recycle-Red
+Valid recycler receipt/certificate; unknown recycler; duplicate document across users; expired/old document; missing weight/category handling.
+E2E - Four segments
+Each segment produces a green_event with reason codes; at least one real reward is issued exactly once; Grow-Green demonstrates provisional/vesting concept.
+15.1 Quality gates
+Oct 11 Gate - Functionality: A deployed E2E story works with seeded/sample evidence.
+Oct 14 Gate - Scientific consistency: Carbon/score logic is deterministic, versioned and tested.
+Oct 16 Gate - Release: Public URL, Android build, security rules, App Check, monitoring and error handling are ready. Feature freeze.
+Oct 17 Gate - Submission: PPT/PDF/README/video accurately describe the deployed version and limitations.
+16. Demo, Documentation and Submission Packaging
+16.1 Recommended 2-3 minute demo
+1. Open the public CarbonLens web app and sign in as John.
+2. Show dashboard: Green Score, estimated CO2e, avoided CO2e and Green Points are separate.
+3. Scan/select plastic bottle image. Briefly show “processing by Google Vision / CarbonLens”.
+4. Result: product/category, Sustainability Score 42/100, carbon estimate + confidence + factor method.
+5. Gemini explains why and recommends a reusable bottle from curated alternatives.
+6. Perform/seed a verified greener event; show verification level and Green Points ledger update.
+7. Optional 20-second Green Move view: bicycle trip replacing car trip and avoided CO2e calculation.
+8. Finish on architecture slide/dashboard and the phrase “Observe → Understand → Change → Verify → Reward → Repeat.”
+16.2 PPT/PDF structure for Oct 17
+Slide
+Content
+1
+Problem + one-line CarbonLens value proposition.
+2
+User story / why current carbon apps are insufficient.
+3
+Innovation: Four reward segments + Trusted Green Event Engine (Go-Green-Product, Green-Move, Grow-Green, Recycle-Red).
+4
+Live product scan flow.
+5
+Carbon accounting + confidence + score separation.
+6
+Gemini role and AI guardrails.
+7
+Google Cloud architecture.
+8
+Reward architecture: evidence -> verification -> action-specific impact -> policy -> append-only ledger; Grow-Green persistence example.
+9
+Environmental/social impact: sustainable purchasing, low-carbon commuting, tree survival and safe e-waste diversion.
+10
+Demo results, roadmap and team.
+11
+Public URL + GitHub + video / QR links.
+16.3 README minimum contents
+Problem statement and solution summary.
+Working public URL and demo video.
+Architecture diagram and Google services used.
+Local Flutter/backend setup instructions.
+Cloud deployment overview without secrets.
+Demo data/factor sources and scientific limitations.
+Privacy/consent model and Green Points disclaimer.
+Known limitations and Phase 2 roadmap.
+Screenshots/GIFs and API flow.
+17. Risk Register and Recovery Plan
+Risk
+Probability
+Impact
+Mitigation / cut line
+Product identification unreliable
+Medium
+High
+Constrain demo to curated categories/products; use Vision evidence + deterministic catalog match; provide sample-image fallback.
+Receipt line items inconsistent
+High
+Medium
+Use merchant/date/total + simple line items; make receipt P1, not the only demo path.
+Emission data sourcing takes too long
+Medium
+High
+Use a small transparent versioned demo dataset with source/provenance fields; never claim global completeness.
+Gemini output varies
+Medium
+Medium
+Structured schema, low-temperature prompt, validation and deterministic fallback.
+Cloud quota/billing issue
+Low/Medium
+High
+Enable billing/APIs on Oct 7; test quota early; keep sample calls bounded.
+Flutter web/mobile divergence
+Medium
+Medium
+Shared widgets/business models; Android-specific Health Connect behind adapter.
+Too many services
+High
+High
+Co-deploy modules in one Cloud Run service for MVP; preserve logical boundaries in code/HLD.
+Late feature changes
+High
+High
+Code freeze Oct 16; after that only critical fixes and artifact work.
+Public link fails during judging
+Low/Medium
+High
+Cloud Monitoring, fresh-browser rehearsal, demo video fallback, avoid auth configuration changes on Oct 18.
+Google-only constraint violated accidentally
+Medium
+Medium
+No third-party SaaS, no external AI/database/CI. GitHub only as mandatory source artifact.
+Tree monitoring over-claim
+High
+High
+Do not claim Maps/satellite proves an individual sapling. Use staged photo/community verification; Earth Engine only as plot-level supporting evidence where resolution is suitable.
+$20/tree appears as guaranteed payment
+Medium
+High
+Treat as optional partner-sponsored campaign policy with explicit budget/eligibility/vesting; Green Points remain default.
+Grow-Green fake/stale images or collusion
+Medium
+High
+Fresh capture metadata, image hashes, proximity/time rules, visitor trust weighting, rate limits and manual/admin review path.
+Unverified/duplicate e-waste certificates
+Medium
+High
+Document AI extraction, recycler registry match, normalized fingerprint and cross-account duplicate detection.
+Reward model becomes incomparable across actions
+Medium
+Medium
+Use one universal policy equation but action-specific impact metrics. Show reasons/factors rather than pretending every action is equivalent CO2e.
+18. Final Definition of Done
+Public Firebase Hosting URL loads without special network access.
+Cloud Run backend is deployed and version endpoint matches submitted build.
+Firebase Authentication works for the demo account and consent is persisted.
+At least one real image flows through Google image analysis and returns structured evidence.
+Carbon estimate is deterministic, versioned and not generated by Gemini.
+Sustainability Score and carbon estimate are displayed separately with confidence.
+Gemini explanation/recommendation uses structured CarbonLens facts and produces validated output.
+At least one Green Point event is gated by verification/duplicate logic and written exactly once.
+BigQuery holds factor/reference data and at least one analytics/reporting table.
+Cloud Logging/Monitoring can demonstrate backend health during judging.
+Android build runs the same core experience or clearly demonstrates the mobile path.
+GitHub repository is public, free of secrets and has a complete README.
+PPT/PDF, public link and demo video are accessible without requesting permission.
+The final demo is rehearsed from a clean browser/device and can be completed in 2-3 minutes.
+All reward actions use the same canonical Trusted Green Event, versioned Reward Policy Engine and append-only ledger; no client or Gemini-issued points.
+Go-Green-Product is fully live; Green-Move, Grow-Green and Recycle-Red have at least thin demonstrable flows or clearly bounded demo evidence without unsupported claims.
+Grow-Green distinguishes planting, survival/persistence and any separate sequestration estimate; no claim that Google Maps pays or individually verifies trees.
+Recycle-Red requires recycler/document evidence and blocks duplicate certificate/receipt claims.
+Appendix A. Integrated HLD Diagrams
+The following HLD views retain the functional architecture from CarbonLens HLD v1.0 and add the v2.1 four-segment reward foundation. The deployment view follows the JAPAC Google-only constraint: Cloud Build, Artifact Registry, Cloud Run and Firebase. For the hackathon, multiple logical services may be co-deployed in one Cloud Run service while preserving code/module boundaries.
+A1 - System Context
+A2 - Logical Architecture
+A3 - Data Architecture
+A4 - Product Scan Sequence
+A5 - Trusted Green Event Flow
+A6 - Four-Segment Reward Architecture
+A7 - Google-First Deployment Model
+Appendix B. Google Product Reference Map
+Official Google documentation references used to validate the recommended stack as of 9 October 2026:
+Product
+Official documentation
+Cloud Run
+https://cloud.google.com/run/docs
+Vertex AI Generative AI / Gemini
+https://cloud.google.com/vertex-ai/generative-ai/docs
+Grounding with Google Search
+https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/ground-with-google-search
+Firebase Authentication
+https://firebase.google.com/docs/auth
+Firebase App Check
+https://firebase.google.com/docs/app-check
+Firebase for Flutter
+https://firebase.google.com/docs/flutter/
+Firebase Hosting / Flutter
+https://firebase.google.com/docs/hosting/frameworks/flutter
+BigQuery
+https://cloud.google.com/bigquery/docs
+Cloud Vision API
+https://cloud.google.com/vision/docs
+Document AI
+https://cloud.google.com/document-ai/docs
+Pub/Sub
+https://cloud.google.com/pubsub/docs
+Artifact Registry
+https://cloud.google.com/artifact-registry/docs
+Cloud Build
+https://cloud.google.com/build/docs
+Cloud Logging
+https://cloud.google.com/logging/docs
+Cloud Monitoring
+https://cloud.google.com/monitoring/docs
+Health Connect
+https://developer.android.com/health-and-fitness
+Google Maps Routes eco-friendly routes
+https://developers.google.com/maps/documentation/routes/eco-routes
+Google Maps Platform APIs
+https://developers.google.com/maps/documentation
+Google Maps Geolocation API
+https://developers.google.com/maps/documentation/geolocation/requests-geolocation
+Google Earth Engine Data Catalog
+https://developers.google.com/earth-engine/datasets/catalog/
+Earth Engine Sentinel-2 collections
+https://developers.google.com/earth-engine/datasets/catalog/sentinel-2
+Document AI processors (Expense / Invoice)
+https://docs.cloud.google.com/document-ai/docs/processors-list
+Recommended implementation priority from Oct 9 onwardKeep the existing Cloud Run/Firebase vertical slice stable, then implement the canonical green_event + Reward Policy Engine before building four separate feature-specific reward systems. Complete Go-Green-Product first, then reuse the same contracts for Green-Move, Grow-Green and Recycle-Red. This avoids four incompatible scoring/ledger implementations.

@@ -1,0 +1,9 @@
+# Upload only this API's source/build inputs. Never upload private configuration.
+*
+!Dockerfile
+!requirements.txt
+!.dockerignore
+!.gcloudignore
+!app/
+!app/**/
+!app/**/*.py

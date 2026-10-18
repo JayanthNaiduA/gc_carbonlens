@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "flutter": {
+    "version": "3.47.7",
+    "revision": "abaf9c523780a608bd46686fd5e53740a07077f8",
+    "dartVersion": "3.13.5",
+    "source": "https://github.com/flutter/flutter.git",
+    "releaseMetadata": "https://storage.googleapis.com/flutter_infra_release/releases/releases_windows.json"
+  },
+  "defaultProfile": "web",
+  "initialManifestSha256": "f9ff05b586e39b55d13a4301095852aa9288a1b60673e33fa9d024d31f88e229",
+  "web": {
+    "host": "127.0.0.1",
+    "port": 8080
+  },
+  "verification": {
+    "testConcurrency": 1
+  },
+  "android": {
+    "compileSdk": 36,
+    "buildTools": "36.0.0",
+    "ndk": "28.2.13676358",
+    "emulatorMemoryMb": 2048,
+    "emulatorCores": 2
+  }
+}
