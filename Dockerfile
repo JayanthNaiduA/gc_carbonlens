@@ -19,5 +19,5 @@ ENV PORT=8080
 ENV NODE_ENV=production
 EXPOSE 8080
 
-# Start server using tsx
-CMD ["npx", "tsx", "server.ts"]
+# Start production server
+CMD ["npm", "start"]

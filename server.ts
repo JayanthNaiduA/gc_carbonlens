@@ -10,10 +10,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Determine execution mode:
-// - Dev mode (AI Studio environment running dev): listens on port 3000 and mounts vite.middlewares
-// - Production mode (GCP Cloud Run container): listens on process.env.PORT || 8080 and serves static dist files
-const isProduction = process.env.NODE_ENV === 'production' && process.env.npm_lifecycle_event !== 'dev';
+const distPath = path.resolve(__dirname, 'dist');
+const indexPath = path.resolve(distPath, 'index.html');
+const hasDist = fs.existsSync(indexPath);
+const isDev = process.env.npm_lifecycle_event === 'dev';
+const isProduction = !isDev && hasDist;
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
@@ -254,12 +255,11 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.resolve(__dirname, 'dist');
-    const indexPath = path.resolve(distPath, 'index.html');
     if (fs.existsSync(distPath)) {
       app.use(express.static(distPath));
     }
-    app.get('*', (_req, res) => {
+    // Express 5 compatible catch-all fallback for SPA client-side routing
+    app.use((_req, res) => {
       if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
       } else {
@@ -268,9 +268,30 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const primaryServer = app.listen(PORT, '0.0.0.0', () => {
     console.log(`CarbonLens Server listening on http://0.0.0.0:${PORT} (mode: ${isProduction ? 'production' : 'development'})`);
   });
+
+  primaryServer.on('error', (err: any) => {
+    console.error(`Error on primary port ${PORT}:`, err);
+  });
+
+  // Ensure port 3000 is also actively bound if Cloud Run sets PORT to 8080 or another port
+  if (PORT !== 3000) {
+    try {
+      const secondaryServer = app.listen(3000, '0.0.0.0', () => {
+        console.log(`CarbonLens Server also listening on http://0.0.0.0:3000`);
+      });
+      secondaryServer.on('error', (err: any) => {
+        console.log(`Secondary port 3000 notice: ${err.message}`);
+      });
+    } catch (err: any) {
+      console.log(`Secondary port 3000 notice: ${err.message}`);
+    }
+  }
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error('Failed to start CarbonLens server:', err);
+  process.exit(1);
+});
